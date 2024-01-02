@@ -1,0 +1,74 @@
+<!-- game-over.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Over</title>
+  <style>
+    body {
+      background-image: url("assets/Dog.jpg");
+      background-size: cover;
+      background-position: center;
+      height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: rgb(14, 13, 13);
+      text-align: center;
+    }
+
+    h1 {
+      font-size: 90px; /* Chỉnh cỡ chữ cho tiêu đề */
+      margin: 10px;
+    }
+
+    p {
+      font-size: 60px; /* Chỉnh cỡ chữ cho đoạn văn bản */
+      margin: 10px;
+    }
+
+    button {
+      background-color: #F3EDC8;
+      color: rgb(12, 11, 11);
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: bold; /* Thêm thuộc tính font-weight để làm chữ đậm */
+    }
+
+    button:hover {
+      background-color: #EAD196;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Game Over</h1>
+  <p>Hết thời gian! Bạn đã không tìm thấy chìa khóa.</p>
+  <!-- Nút Chơi Lại -->
+  <button onclick="restartGame()">Chơi Lại</button>
+
+  <!-- Add audio element for game-over sound -->
+  <audio id="gameOverSound" src="audio/Thua.mp3" preload="auto"></audio>
+
+  <script>
+    // Hàm xử lý khi trang được tải
+    window.onload = function() {
+      // Play the game-over sound
+      var gameOverSound = document.getElementById('gameOverSound');
+      gameOverSound.play();
+    }
+
+    // Hàm xử lý khi nhấn nút "Chơi Lại"
+    function restartGame() {
+      // Chuyển hướng người chơi đến trang khác hoặc thực hiện các thao tác bắt đầu lại game
+      window.location.href = 'index.html'; // Thay 'index.html' bằng trang bạn muốn chuyển đến khi chơi lại
+    }
+  </script>
+</body>
+
+</html>

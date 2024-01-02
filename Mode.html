@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tìm Chìa Khóa</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  <style>
+
+  </style>
+  <!-- Thêm thẻ audio -->
+  <audio id="backgroundMusic" loop>
+    <source src="audio/Game.mp3" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
+</head>
+
+<body  onload="startGame()" >
+  <img id="rightImage" src="assets/Ruong (1).png" alt="Right Image">
+  <h1>TÌM CHÌA KHÓA CỦA RƯƠNG KHO BÁU </h1>
+  <div class="grid" id="gameGrid"></div>
+  
+  <p id="message"></p>
+  <p id="timer">Thời gian còn lại: <span id="time"></span></p>
+   <!-- Nút thoát -->
+   <img id="exitButton" src="assets/Thoat.png" alt="Exit Button" onclick="exitGame()">
+   <!-- Hình ảnh nút tải lại trang -->
+    <img id="reloadButton" src="assets/Quay.png" alt="Tải Lại Trang">
+
+  <script>
+    let exsistNumber = [];
+    let currentSquare = 0;
+    let keyPosition;
+    let gridSize = 5;
+    let keyClicked = false;
+    let usedNumbers = [];
+    let timeLimit = 60;
+    let hasKey = false;
+    let backgroundMusic = document.getElementById('backgroundMusic');
+    $(document).ready(function () {
+      checkClickNumberWithCondition();
+    });
+    // Hàm tìm kiếm tuần tự
+    function sequentialSearch(array, target) {
+      for (let i = 0; i < array.length; i++) {
+        if (array[i] === target) {
+          return true; // Trả về true nếu số được tìm thấy trong mảng
+        }
+      }
+      return false; // Trả về false nếu số không được tìm thấy trong mảng
+    }
+    // Thêm sự kiện click cho nút thoát
+    document.getElementById('exitButton').addEventListener('click', function () {
+    // Chuyển hướng người chơi đến trang khác hoặc thực hiện các thao tác thoát game ở đây
+    window.location.href = 'index.html'; // Thay 'trang-moi.html' bằng trang bạn muốn chuyển đến khi thoát
+    });
+    // Sự kiện click cho nút tải lại trang
+    document.getElementById('reloadButton').addEventListener('click', function () {
+    // Tải lại trang hiện tại
+    location.reload();
+    });
+
+    // Hàm bắt đầu trò chơi
+    function startGame() {
+      usedNumbers = [];
+      resetTimer();
+      resetGame();
+      playBackgroundMusic(); // Chạy nhạc nền khi bắt đầu trò chơi
+    }
+
+    // Hàm reset trò chơi
+    function resetGame() {
+      currentSquare = 0;
+      keyClicked = false;
+      hasKey = false;
+      document.getElementById('time').textContent = '';
+      createGrid();
+      keyPosition = exsistNumber[Math.floor(Math.random() * exsistNumber.length)];
+      document.getElementById('message').textContent = 'Số Chìa Khóa Cần Tìm: ' + keyPosition;
+      startTimer();
+    }
+    // Hàm chơi nhạc nền
+    function playBackgroundMusic() {
+      backgroundMusic.play();
+    }
+
+    // Hàm dừng nhạc nền
+    function stopBackgroundMusic() {
+      backgroundMusic.pause();
+    }
+
+    // Hàm tạo lưới ô vuông
+    function createGrid() {
+      const gameGrid = document.getElementById('gameGrid');
+      gameGrid.innerHTML = '';
+
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const square = document.createElement('div');
+        square.className = 'square';
+
+        const image = document.createElement('img');
+        image.src = 'assets/keys.png';
+
+        const customNumber = document.createElement('span');
+        customNumber.className = 'custom-number';
+        const randomNumber = getRandomNumber();
+        exsistNumber.push(randomNumber)
+        customNumber.textContent = randomNumber;
+
+        checkSquare(square, customNumber);
+
+        gameGrid.appendChild(square);
+        square.appendChild(image);
+        square.appendChild(customNumber);
+      }
+    }
+
+    // Hàm lấy số ngẫu nhiên
+    function getRandomNumber() {
+      let randomNumber;
+      do {
+        randomNumber = Math.floor(Math.random() * 100) + 1;
+      } while (usedNumbers.includes(randomNumber) || randomNumber === keyPosition || !checkRequiredNumber(randomNumber));
+      return randomNumber;
+    }
+
+    // Hàm kiểm tra số yêu cầu
+    function checkRequiredNumber(number) {
+      return number > 50;
+    }
+
+    // Hàm hiển thị số
+    function showCustomNumber(element) {
+      element.style.display = 'block';
+    }
+
+    // Hàm hiển thị số khi nhấp chuột
+    function showCustomNumberOnClick(element) {
+      element.style.display = 'block';
+    }
+
+    // Hàm kiểm tra chìa khóa
+    function checkKey(keysLeft) {
+      const message = document.getElementById('message');
+      const clickedNumber = usedNumbers[currentPlayerPosition - 1];
+
+      if (currentPlayerPosition === gridSize * gridSize) {
+        message.textContent = 'Chúc mừng! Bạn đã tìm thấy chìa khóa để mở rương.';
+        disableGrid();
+        stopTimer();
+        // Chuyển hướng sang trang mới khi chiến thắng
+        window.location.href = 'winning-page.html';
+      } else if (clickedNumber === keyPosition) {
+        message.textContent = 'Chúc mừng! Bạn đã tìm thấy chìa khóa mang số ' + keyPosition;
+        hasKey = true;
+      } else {
+        // Thông báo lỗi nếu không phải chìa khóa đúng
+        showMessage('Không phải chìa khóa để mở rương. Hãy thử lại!');
+      }
+    }
+
+
+
+    
+    // Hàm kiểm tra đã hoàn thành
+    function checkClickNumberWithCondition() {
+    var gameStartTime; // Biến để theo dõi thời gian bắt đầu trò chơi
+
+    // Sự kiện click hiện tại
+    $(document).on('click', function (e) {
+    var value_clicked = $(e.target).children('.custom-number').text();
+    
+    if (value_clicked == keyPosition) {
+        // Lấy thời điểm kết thúc trò chơi
+        var gameEndTime = new Date().getTime();
+
+        // Tính thời gian hoàn thành trò chơi (milliseconds)
+        var gameTime = gameEndTime - gameStartTime;
+
+        // Chuyển đổi thời gian thành giây (rounded)
+        var gameTimeInSeconds = Math.round(gameTime / 1000);
+
+        // Tạo âm thanh chiến thắng
+            var winSound = new Audio("audio/Win.wav");
+            winSound.play();
+
+        // Chờ vài giây trước khi hiển thị thông báo
+        setTimeout(function () {
+            // Tạo chuỗi HTML với số chìa khóa và thông báo
+            var html_out = '<h1>CHÌA KHÓA SỐ ' + keyPosition + ' ĐÃ ĐƯỢC TÌM THẤY, RƯƠNG KHO BÁU ĐÃ ĐƯỢC MỞ</h1>';
+
+            // Hiển thị thời gian hoàn thành
+            html_out += '<p>Thời gian hoàn thành: ' + gameTimeInSeconds + ' giây</p>';
+
+            // Thêm nút bắt đầu lại
+            html_out += '<button id="restartButton">Chơi Lại</button>';
+            $('body').html(html_out);
+
+            console.log('đã tìm thấy');
+        }, 500); // 500 milliseconds = 0.5 giây (thay đổi số này nếu bạn muốn thay đổi thời gian chờ)
+    } else {
+        console.log(value_clicked);
+    }
+});
+
+
+
+    // Sự kiện click cho nút bắt đầu lại
+    $(document).on('click', '#restartButton', function () {
+        // Tải lại trang hiện tại để bắt đầu lại trò chơi
+        location.reload();
+    });
+
+    // Ghi lại thời điểm bắt đầu trò chơi khi tài liệu đã sẵn sàng
+    $(document).ready(function () {
+        gameStartTime = new Date().getTime();
+    });
+}
+
+   
+
+
+
+
+
+
+    // Hàm tìm kiếm và kiểm tra chìa khóa
+    function searchAndCheckKey(clickedNumber) {
+      
+      const gameGrid = document.getElementById('gameGrid');
+      const squares = gameGrid.getElementsByClassName('square');
+      let keyFound = false;
+
+      $().click(function (e) { 
+        e.preventDefault();
+        
+      });
+      
+      for (let i = 0; i < squares.length; i++) {
+        const customNumber = squares[i].getElementsByClassName('custom-number')[0];
+        const number = parseInt(customNumber.textContent);
+
+        if (number === clickedNumber) {
+          keyFound = true;
+          break;
+        }
+      }
+
+      if (keyFound) {
+        console.log('đã tìm thấy');
+      } else {
+        showMessage('Không phải chìa khóa để mở rương. Hãy thử lại!');
+      }
+    }
+
+    // Hàm tắt ô vuông
+    function disableGrid() {
+      // Các thao tác khi tìm thấy chìa khóa
+    }
+
+
+// Hàm kiểm tra ô vuông
+function checkSquare(square, customNumber) {
+  square.addEventListener('click', () => {
+    // Kiểm tra xem key đã được click và không có key nào hiện tại
+    if (!keyClicked && !hasKey) {
+      // Chuyển đổi số từ chuỗi sang số nguyên
+      const clickedNumber = parseInt(customNumber.textContent);
+
+      // Hiển thị số đã click
+      showCustomNumberOnClick(customNumber);
+
+      // Thêm số đã click vào mảng usedNumbers
+      usedNumbers.push(clickedNumber);
+
+      // Kiểm tra xem tất cả các ô vuông đã được mở chưa
+      if (usedNumbers.length === gridSize * gridSize) {
+        // Nếu đã mở hết, đặt keyClicked thành true và kiểm tra key
+        keyClicked = true;
+        searchAndCheckKey(clickedNumber);
+      }
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+    // Hàm bắt đầu đồng hồ đếm thời gian
+    let timerInterval;
+    function startTimer() {
+      timerInterval = setInterval(function () {
+        updateTimer();
+      }, 1000);
+    }
+    
+    // Hàm dừng đồng hồ đếm thời gian
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    // Hàm reset đồng hồ đếm thời gian
+    function resetTimer() {
+      stopTimer();
+      timeLimit = 15;
+      updateTimer();
+    }
+
+    // Hàm cập nhật đồng hồ đếm thời gian
+function updateTimer() {
+  const timeElement = document.getElementById('time');
+
+  // Chỉnh tổng thời gian đếm ngược thành 15 giây
+  if (timeLimit >= 0) {
+    const minutes = Math.floor(timeLimit / 60);
+    const seconds = timeLimit % 60; // Thay đổi thành 60 để đếm theo giây
+    timeElement.textContent = `${formatTime(minutes)}:${formatTime(seconds)}`;
+    timeLimit--;
+  } else {
+    timeElement.textContent = 'Hết thời gian!';
+    stopTimer();
+    disableGrid();
+    showGameOver();
+  }
+}
+
+
+// Hàm hiển thị thông điệp game over và chuyển hướng đến trang game-over.html
+function showGameOver() {
+  const message = document.getElementById('message');
+  message.textContent = 'Hết thời gian!';
+
+  // Chuyển hướng đến trang game-over.html
+  window.location.href = 'Win.html';
+}
+
+
+
+    // Hàm định dạng thời gian
+    function formatTime(time) {
+      return time < 10 ? `0${time}` : time;
+    }
+
+    // Hàm hiển thị thông điệp
+    function showMessage(text) {
+      const message = document.getElementById('message');
+      message.textContent = text;
+    }
+
+    // Sự kiện khi trang web được tải
+    window.onload = function () {
+      startGame();
+    };
+  </script>
+</body>
+
+</html>

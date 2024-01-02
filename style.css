@@ -1,0 +1,154 @@
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  margin: 0;
+  overflow: hidden;
+  background-image: url(assets/Nen1.png);
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100vh; /* Chiều cao của body bằng 100% chiều cao của màn hình */
+}
+
+
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, 100px);
+  gap: 10px;
+  }
+
+.square {
+    width: 100px;
+    height: 100px;
+    background-color: #596FB7;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 10px;
+    overflow: hidden;
+}
+.square img{
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    pointer-events: none;
+
+}
+.hidden-number {
+    font-size: 5px;
+    margin-top: 10px;
+    color: #0f0f0f;
+  }
+  .square {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 5px;
+    cursor: pointer;
+  }
+
+  img {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  .custom-number {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    background-color: rgba(255, 255, 255, 0.8);
+    padding: 5px;
+    border-radius: 5px;
+    font-size: 14px;
+    font-weight: bold;
+    display: none; /* Mặc định ẩn số */
+  }
+  #rightImage {
+    position: fixed;
+    top: 50%;
+    transform: translateY(-50%);
+    max-height: 80vh; /* Giữ hình ảnh trong khoảng chiều cao tối đa */
+  }
+  #rightImage {
+    right: 10px;
+  }
+  .key-message {
+    position: absolute; /* Đặt vị trí tuyệt đối */
+    top: 0; /* Cách trên cùng của phần tử cha (ở đây là body) */
+    right: 0; /* Cách bên phải của phần tử cha */
+    margin: 20px; /* Khoảng cách giữa phần tử và mép phần tử cha */
+    font-size: 18px; /* Kích thước chữ */
+    color: #171717; /* Màu chữ (mã màu có thể thay đổi) */
+    font-weight: bold; /* Độ đậm của chữ */
+    z-index: 2; /* Độ sâu của phần tử trên trục Z, để đảm bảo nó nằm trên hình bên phải */
+  }
+  
+  #timer {
+  position: fixed;
+  top: 60px; /* Điều chỉnh khoảng cách từ trên xuống */
+  right: 1300px; /* Điều chỉnh khoảng cách từ phải sang trái */
+  color: rgb(20, 19, 19); /* Màu chữ sẽ phù hợp với nền của trò chơi của bạn */
+  font-size: 18px; /* Điều chỉnh kích thước chữ nếu cần */
+}
+
+  #message {
+    color: #f7f6f6;
+    font-size: 30px;
+    font-weight: bold; /* Sử dụng font-weight để làm chữ in đậm */
+    position: absolute;
+    top: 250px;
+    right: 320px;
+    width: auto;
+    line-height: 2;
+    transform: skew(-20deg); /* Góc nghiêng -20 độ, có thể điều chỉnh giá trị theo nhu cầu của bạn */
+  }
+
+#restartButton {
+    background-color: #164788; /* Màu nền xanh lá cây */
+    color: white; /* Màu chữ trắng */
+    padding: 15px 30px; /* Tăng kích thước lề */
+    border: none; /* Không có đường viền */
+    border-radius: 5px; /* Góc cong cho nút */
+    cursor: pointer; /* Con trỏ thành bàn tay khi di chuột vào nút */
+    margin-top: 20px; /* Khoảng cách từ nút đến các phần khác */
+}
+
+#restartButton:hover {
+    background-color: #39543a; /* Màu nền xanh lá cây đậm khi di chuột vào nút */
+}
+h1 {
+  color: #000000; /* Màu chữ trắng */
+  font-size: 50px;
+}
+
+/* Thêm các quy tắc CSS khác tại đây */
+
+
+p{
+  color: #121010; /* Màu chữ trắng */
+  font-size: 30px;
+  right: 100px;
+  width: auto;
+  line-height: 2; /* Chiều cao dòng là 1.5 lần kích thước của font */
+}
+#exitButton {
+  position: fixed;
+  bottom: 692px; /* Khoảng cách từ nút đến phía dưới màn hình */
+  left: 98%; /* Chuyển nút vào giữa màn hình theo chiều ngang */
+  transform: translateX(-50%); /* Dịch chuyển nút ngược lại 50% chiều ngang */
+  cursor: pointer;
+}
+#reloadButton{
+  position: fixed;
+  bottom: 692px; /* Khoảng cách từ nút đến phía dưới màn hình */
+  /*top: 0px; /* Khoảng cách từ nút đến phía trên màn hình */
+  left: 2%; /* Chuyển nút vào giữa màn hình theo chiều ngang */
+  transform: translateX(-50%); /* Dịch chuyển nút ngược lại 50% chiều ngang */
+  cursor: pointer;
+}

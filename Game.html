@@ -1,0 +1,199 @@
+// Hàm kiểm tra ô vuông
+function checkSquare(square, customNumber) {
+  square.addEventListener('click', () => {
+    // Kiểm tra xem key đã được click và không có key nào hiện tại
+    if (!keyClicked && !hasKey) {
+      // Chuyển đổi số từ chuỗi sang số nguyên
+      const clickedNumber = parseInt(customNumber.textContent);
+
+      // Hiển thị số đã click
+      showCustomNumberOnClick(customNumber);
+
+      // Thêm số đã click vào mảng usedNumbers
+      usedNumbers.push(clickedNumber);
+
+      // Kiểm tra xem tất cả các ô vuông đã được mở chưa
+      if (usedNumbers.length === gridSize * gridSize) {
+        // Nếu đã mở hết, đặt keyClicked thành true và kiểm tra key
+        keyClicked = true;
+        searchAndCheckKey(clickedNumber);
+      }
+    }
+  });
+}
+// Hàm bắt đầu đồng hồ đếm thời gian
+    let timerInterval;
+    function startTimer() {
+      timerInterval = setInterval(function () {
+        updateTimer();
+      }, 1000);
+    }
+    
+    // Hàm dừng đồng hồ đếm thời gian
+    function stopTimer() {
+      clearInterval(timerInterval);
+    }
+
+    // Hàm reset đồng hồ đếm thời gian
+    function resetTimer() {
+      stopTimer();
+      timeLimit = 60;
+      updateTimer();
+    }
+
+    // Hàm cập nhật đồng hồ đếm thời gian
+    function updateTimer() {
+    const timeElement = document.getElementById('time');
+   if (timeLimit >= 0) {
+    const minutes = Math.floor(timeLimit / 60);
+    const seconds = timeLimit % 15;
+    timeElement.textContent = `${formatTime(minutes)}:${formatTime(seconds)}`;
+    timeLimit--;
+  } else {
+    timeElement.textContent = 'Hết thời gian!';
+    stopTimer();
+    disableGrid();
+    showGameOver();
+  }
+}
+
+
+// Hàm hiển thị thông điệp game over và chuyển hướng đến trang game-over.html
+function showGameOver() {
+  const message = document.getElementById('message');
+  message.textContent = 'Hết thời gian!';
+
+  // Chuyển hướng đến trang game-over.html
+  window.location.href = 'Win.html';
+}
+
+
+    // Hàm định dạng thời gian
+    function formatTime(time) {
+      return time < 10 ? `0${time}` : time;
+    }
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Game Tìm Chìa Khóa</title> 
+  <link rel="stylesheet" href="style.css">
+  <style>
+     body {
+      margin: 0;
+      overflow: hidden; /* Ngăn chặn thanh cuộn */
+    }
+    #rightImage {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      max-height: 80vh; /* Giữ hình ảnh trong khoảng chiều cao tối đa */
+    }
+    #rightImage {
+      right: 10px;
+    }
+  </style>
+</head>
+<body> 
+  <img id="rightImage" src="assets/Ruong (1).png" alt="Right Image">
+  <h1>Game Tìm Chìa Khóa Để Có Thể Mở Rương Kho Báu</h1>
+  <div class="grid" id="gameGrid"></div>
+  <p id="message"></p>
+  <button onclick="startGame()">Bắt đầu</button>
+
+  <script>
+    let keyPosition;
+    let gridSize = 5;
+    let keyClicked = false;
+    let usedNumbers = [];
+
+    function startGame() {
+      keyPosition = Math.floor(Math.random() * gridSize * gridSize) + 1;
+      usedNumbers = []; // Đặt lại mảng khi bắt đầu một trò chơi mới
+      createGrid();
+    }
+    function updateInstruction() {
+      const keyLocationElement = document.getElementById('keyLocation');
+      keyLocationElement.textContent = `Vị trí số chìa khóa cần tìm: ${3}`;
+    }
+    function createGrid() {
+      const gameGrid = document.getElementById('gameGrid');
+
+      for (let i = 0; i < gridSize * gridSize; i++) {
+        const square = document.createElement('div');
+        square.className = 'square';
+        
+        // Tạo phần tử hình ảnh
+        const image = document.createElement('img');
+        // Đặt đường dẫn hình ảnh của bạn
+        image.src = 'assets/keys.png';
+        
+        // Tạo phần tử span để chứa số tùy chọn
+        const customNumber = document.createElement('span');
+        customNumber.className = 'custom-number';
+        const randomNumber = getRandomNumber();
+        customNumber.textContent = randomNumber;
+
+        // Thêm số vào mảng đã sử dụng để đảm bảo không trùng lặp
+        usedNumbers.push(randomNumber);
+
+        // Thêm sự kiện nhấp chuột với hàm checkKey(i)
+        square.addEventListener('click', () => {
+          if (i === keyPosition && !keyClicked) {
+            keyClicked = true;
+            showCustomNumber(customNumber);
+          } else {
+            showCustomNumberOnClick(customNumber);
+          }
+          checkKey(i);
+        });
+
+        // Thêm ô vuông vào lưới trò chơi
+        gameGrid.appendChild(square);
+
+        // Thêm hình ảnh vào ô vuông
+        square.appendChild(image);
+
+        // Thêm số tùy chọn dưới hình ảnh
+        square.appendChild(customNumber);
+      }
+    }
+
+    function getRandomNumber() {
+      let randomNumber;
+      do {
+        // Tạo số tùy chọn ngẫu nhiên
+        randomNumber = Math.floor(Math.random() * 100) + 1;
+      } while (usedNumbers.includes(randomNumber)); // Kiểm tra xem số đã sử dụng chưa
+
+      return randomNumber;
+    }
+
+    function showCustomNumber(element) {
+      // Hiển thị số tùy chọn khi chìa khóa được nhấn
+      element.style.display = 'block';
+    }
+
+    function showCustomNumberOnClick(element) {
+      // Hiển thị số tùy chọn khi nhấp chuột
+      element.style.display = 'block';
+    }
+    function checkKey(keysLeft) {
+      const message = document.getElementById('message');
+      if (keysLeft === 0) {
+        message.textContent = 'Chúc mừng! Bạn đã tìm thấy đủ chìa khóa để mở rương.';
+      } else {
+        message.textContent = `Bạn còn ${keysLeft} chìa khóa để tìm.`;
+      }
+    }
+    function disableGrid() {
+      // Các thao tác khi tìm thấy chìa khóa, có thể thêm logic tùy thuộc vào yêu cầu cụ thể.
+    }
+  </script>
+</body>
+</html>
+<script type="module" src="js/code.js"></script>
+    <script type="module" src="js/Main2.js"></script>
